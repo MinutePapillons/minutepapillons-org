@@ -4,6 +4,22 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{{ .Title }}</title>
+<!-- OpenGraph + Twitter card (Photomaton-9yx).
+     og:url / og:image sont des URL ABSOLUES: les deux deploiements Pages
+     (alx.github.io + minutepapillons.github.io) partagent la meme build,
+     donc les tags pointent toujours vers le site org (canonical). -->
+<meta property="og:site_name" content="{{ .Site.Title }}" />
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}" />
+<meta property="og:title" content="{{ .Title }}" />
+<meta property="og:description" content="{{ .Description | default .Site.Title }}" />
+<meta property="og:url" content="{{ .Site.Params.ogBase }}{{ .RelPermalink | replaceRE `^/` `` }}" />
+<meta property="og:image" content="{{ .Site.Params.ogBase }}assets/uploads/2026/01/LOGO-RB@3x-1024x575.png" />
+<meta property="og:image:alt" content="Minute Papillons — logo" />
+<meta property="og:locale" content="{{ .Site.Language.Locale }}" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="{{ .Title }}" />
+<meta name="twitter:description" content="{{ .Description | default .Site.Title }}" />
+<meta name="twitter:image" content="{{ .Site.Params.ogBase }}assets/uploads/2026/01/LOGO-RB@3x-1024x575.png" />
 {{ range .AllTranslations }}
 <link rel="alternate" hreflang="{{ .Language.Locale }}" href="{{ .Permalink }}" />
 {{ end }}
