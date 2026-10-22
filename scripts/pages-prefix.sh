@@ -14,7 +14,12 @@ SUB="${1:?usage: pages-prefix.sh /subpath/}"
 CORE="${SUB#/}"; CORE="${CORE%/}"
 cd "$(dirname "$0")/.."
 
-if grep -rq "/${CORE}/assets/" public/ 2>/dev/null; then
+# Guard against double-prefixing: refuse only if public/ already carries a
+# prefixed ref IN A REWRITABLE POSITION (what the sed rules below would have
+# produced). Absolute OpenGraph URLs (og:url / og:image) legitimately contain
+# /SUB/assets/ preceded by the domain, not a quote/paren/comma/href=, so
+# they must NOT trip the guard.
+if grep -rqE "href=\"/${CORE}/|[\"']/${CORE}/(assets|css)/|url\(/${CORE}/assets/|, /${CORE}/assets/" public/ 2>/dev/null; then
   echo "public/ already contains /${CORE}/ refs — refusing to double-prefix." >&2
   exit 1
 fi

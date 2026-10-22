@@ -98,6 +98,8 @@
                 href="/questions-frequentes/"
                 />
   </url><url>
+    <loc>/test-md/</loc>
+  </url><url>
     <loc>/tags/</loc>
     <xhtml:link
                 rel="alternate"

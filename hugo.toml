@@ -27,3 +27,8 @@ title = "Minute Papillons"
 # Les deux deploiements Pages partagent la meme build: les tags OG
 # pointent toujours vers le site org, meme depuis alx.github.io.
 ogBase = "https://minutepapillons.github.io/minutepapillons-org/"
+
+[markup.goldmark.renderer]
+# Content files (.md) embed the original WordPress block markup as raw HTML;
+# allow it to pass through the markdown renderer unchanged.
+unsafe = true
