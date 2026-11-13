@@ -11,18 +11,31 @@
                  /img/2025/10/20251007_101002-1-2048x1285.jpg 2048w"
          sizes="100vw" width="2560" height="1606" decoding="async" />
     <div class="hero__inner">
+      {{- /* Below the tablet the five labels cannot share a row, so they move
+             behind a native <details> disclosure. That is deliberately JS-free:
+             <details> brings keyboard operation, screen-reader semantics and
+             Escape-to-close on its own, which the previous WP modal reimplemented
+             badly in a hand-rolled script.
+             On desktop the same markup renders as a plain inline row: the
+             summary is hidden and `display: contents` drops the <details> box
+             (see .nav__disclosure in site.css). */ -}}
       <nav class="nav" aria-label="{{ if eq .Language.Lang "fr" }}Navigation principale{{ else }}Main navigation{{ end }}">
+        <details class="nav__disclosure">
+          <summary class="nav__toggle">
+            <span class="nav__toggle-icon" aria-hidden="true"></span>
+            <span class="nav__toggle-label">Menu</span>
+          </summary>
         <ul class="nav__list">
           {{- range site.Menus.main }}
-          {{- /* .URL already carries the deployment base path; strip it so relURL
-               does not produce /base/base/... under relativeURLs. */ -}}
-          {{- /* .URL / .RelPermalink carry the base path; $base strips it. */ -}}
+          {{- /* .URL / .RelPermalink already carry the deployment base path;
+                 strip it so Hugo's relativeURLs rewrite does not double it. */ -}}
           {{- $href := .URL -}}
           {{- with .Page }}{{ $href = .RelPermalink }}{{ end -}}
           {{- $href = strings.TrimPrefix $base $href -}}
           <li class="nav__item"><a class="nav__link" href="{{ $href }}"{{ if $.IsMenuCurrent "main" . }} aria-current="page"{{ end }}>{{ .Name }}</a></li>
           {{- end }}
         </ul>
+        </details>
       </nav>
 
       {{- /* Outside the nav flex container so the language links cannot shrink

@@ -47,5 +47,22 @@
 {{ partial "header.html" . }}
 <main id="main">{{ block "main" . }}{{ end }}</main>
 {{ partial "footer.html" . }}
+{{- /* Escape is the one disclosure behaviour <details> does not give us in
+       Chromium: the element opens and closes with Enter/Space and is fully
+       operable and announced without any script, so this is a pure
+       enhancement. Kept inline and tiny (no request) and only touches the
+       menu's own open state, then returns focus to the summary. */}}
+<script>
+(function () {
+  var d = document.querySelector('.nav__disclosure');
+  if (!d) return;
+  var s = d.querySelector('.nav__toggle');
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || !d.open) return;
+    d.open = false;
+    if (s) s.focus();
+  });
+})();
+</script>
 </body>
 </html>

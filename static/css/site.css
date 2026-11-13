@@ -140,24 +140,37 @@ img { max-width: 100%; height: auto; }
 }
 
 /* ----------------------------------------------------------------- nav -- */
+/* Desktop: the <details> wrapper is inert. `display: contents` removes its box
+   so the <li> row behaves exactly as it did before the disclosure was added,
+   and the <summary> is hidden (it is the mobile-only toggle). */
 .nav {
   display: flex;
   justify-content: center;
   max-width: 100%;
 }
+.nav__toggle { display: none; }
+/* Desktop only: a closed <details> hides its content through the UA's own
+   slot, so `display: contents` alone is not enough — force the content back
+   on so the row stays inline. Scoped to the desktop query on purpose: on
+   mobile the panel must start collapsed. Browsers without ::details-content
+   keep the (still operable) summary toggle on desktop. */
+@media (min-width: 48rem) {
+  /* Drop the <details> box so the <li> row lays out exactly as a bare <ul>. */
+  .nav__disclosure { display: contents; }
+  .nav__disclosure::details-content {
+    content-visibility: visible;
+    block-size: auto;
+  }
+}
+
 .nav__list {
   display: flex;
-  /* One row, like the original desktop menu. Now that each anchor is a single
-     <a> the five labels are ~30px wider in total than the baseline's
-     span-in-anchor nesting, so the row is allowed to shrink rather than wrap;
-     below the tablet breakpoint it wraps instead of scrolling.
-     (bead org-6i7.7 owns the final mobile treatment.) */
+  /* One row, like the original desktop menu. Each anchor carries its own
+     .5em/1em padding, which is what spaced the original items apart. */
   flex-wrap: nowrap;
   min-width: 0;
   justify-content: center;
   align-items: center;
-  /* No gap: the anchors carry their own .5em/1em padding, which is what
-     spaced the original menu items apart. */
   gap: 0;
   margin: 0;
   padding: 0;
@@ -267,8 +280,59 @@ img { max-width: 100%; height: auto; }
 .site-footer__credit { margin: 0; }
 
 /* Below the tablet the five labels cannot share a row at a legible size, so
-   they wrap. The original hid them behind a JS-driven modal; bead org-6i7.7
-   replaces that with a no-JS treatment. */
+   they move behind a native <details> disclosure. The original hid them behind
+   a JS-driven modal with a hand-rolled toggle; <details>/<summary> gives the
+   same affordance with keyboard support, screen-reader semantics and
+   Escape-to-close from the user agent, and zero script (bead org-6i7.7). */
 @media (max-width: 47.99rem) {
-  .nav__list { flex-wrap: wrap; }
+  .nav {
+    flex-direction: column;
+    align-items: center;
+  }
+  /* Restore the real box and make it a disclosure again. */
+  .nav__disclosure { display: block; width: 100%; }
+
+  .nav__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    /* The summary is the touch target: comfortable without a stray tap. */
+    padding: 0.5em 1em;
+    border: 0;
+    background: none;
+    color: var(--mp-color-title);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    list-style: none;
+  }
+  /* Drop the default disclosure triangle in every engine; the custom icon
+     below replaces it so the control matches the type. */
+  .nav__toggle::-webkit-details-marker { display: none; }
+  .nav__toggle-icon {
+    width: 0;
+    height: 0;
+    /* A caret drawn with borders: no icon font, no SVG request. */
+    border-left: 0.34em solid transparent;
+    border-right: 0.34em solid transparent;
+    border-top: 0.42em solid currentColor;
+    transition: transform 0.15s ease;
+  }
+  .nav__disclosure[open] > .nav__toggle .nav__toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  /* The panel: one item per row, full width, so no label wraps mid-string. */
+  .nav__list {
+    flex-direction: column;
+    align-items: stretch;
+    font-size: clamp(14px, 0.875rem + ((1vw - 3.2px) * 0.625), 18px);
+  }
+  .nav__item { justify-content: center; }
+  .nav__link { text-align: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav__toggle-icon { transition: none; }
 }
