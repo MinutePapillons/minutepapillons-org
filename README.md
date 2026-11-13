@@ -58,7 +58,17 @@ in French (default language, at the site root) and English (under `/en/`):
 ```sh
 hugo --baseURL https://minutepapillons.github.io/minutepapillons-org/ # → public/
 bash scripts/check-assets.sh public   # fail the deploy on a 404 asset/font
+bash scripts/check-clean.sh public    # fail the deploy on WordPress heritage
 ```
+
+`check-clean.sh` is the anti-regression guard for epic `org-6i7`. It fails the
+build if any of this comes back: `block-*` / `has-*` / `is-*` / `container-core*`
+`elements-*` / `alignwide` / `alignfull` classes, inline `style=` attributes,
+an inlined `<style>` element, `/assets/{themes,core,plugins,uploads}/` paths,
+`?ver=` cache-busters, a second stylesheet (the site ships exactly one), a
+stylesheet over 25 KB of rules (comments excluded), or a `<meta name="generator">`
+that disagrees with `.hugo-version` (i.e. a stale build). It parses minified and
+plain output alike.
 
 Hugo is pinned in `.hugo-version` (and `HUGO_VERSION` in the workflow, which
 fails if the two disagree). CI builds the site and publishes `public/`; that

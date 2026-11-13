@@ -4,6 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{{ .Title }}</title>
+<!-- Hugo's version on EVERY page (Hugo only auto-emits it on the home
+     page). scripts/check-clean.sh refuses a build whose tag disagrees
+     with .hugo-version, so a stale or unpinned build cannot deploy. -->
+{{ hugo.Generator }}
 <!-- OpenGraph + Twitter card (Photomaton-9yx).
      og:url / og:image are ABSOLUTE: both Pages deployments
      (alx.github.io + minutepapillons.github.io) share one build, so the tags

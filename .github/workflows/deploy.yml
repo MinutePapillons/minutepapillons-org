@@ -64,6 +64,13 @@ jobs:
         # fail the deploy instead of shipping 404 stylesheets/fonts/images.
         run: bash scripts/check-assets.sh public
 
+      - name: Verify no WordPress heritage
+        # Epic org-6i7 removed the WordPress export (block classes, inline
+        # style attributes, plugin sheets, "?ver=" cache-busters). This refuses
+        # a deploy that lets any of it back in, and catches a build made with a
+        # Hugo other than the pinned one.
+        run: bash scripts/check-clean.sh public
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
