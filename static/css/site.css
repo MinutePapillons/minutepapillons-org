@@ -1,4 +1,12 @@
-/* Minute Papillons — site stylesheet. * * Structural layer: fonts, reset, tokens, and the page furniture written by * layouts/ (header, hero, nav, footer). Content-block styling still lives in * the inherited WordPress sheets until bead org-6i7.5 consolidates everything * here; this file must therefore come AFTER them (see baseof.html). */
+/* Minute Papillons — the site's only stylesheet.
+
+   Layout: tokens, reset, base typography, the page furniture written by
+   layouts/ (header, hero, nav, footer), and the content blocks. The inherited
+   WordPress sheets are gone (epic org-6i7); this file is loaded alone.
+
+   Rules that reproduce a measured value say so, and name the number, so the
+   next person can tell authored intent from coincidence. scripts/check-clean.sh
+   enforces the size budget and blocks WordPress classes from returning. */
 
 /* ---------------------------------------------------------------- fonts -- */
 /* One @font-face per family. Both files are woff2, preloaded in baseof.html. The src URL is relative (../fonts/): Hugo's relativeURLs rewrites markup and templates, but NOT url() inside a stylesheet, so an absolute /fonts/ would 404 once the site is served from its /minutepapillons-org/ subpath. */

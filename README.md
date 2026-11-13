@@ -37,21 +37,18 @@ in French (default language, at the site root) and English (under `/en/`):
 
 ## Layout
 
-- `hugo.toml`, `content/`, `layouts/`, `static/` — Hugo source
-- `public/` — built site (served as-is; `hugo build` regenerates it here)
-- `build_hugo.py` — original converter from the WordPress mirror (provenance).
-  It expects the WP mirror checkout next to it and outputs to `./hugo/`; the
-  mirror is archived in `../minutepapillons-wp-mirror-*.tar.gz`. Do not run it
-  without the mirror extracted.
+- `hugo.toml` — site config, languages, `relativeURLs`, `ogBase`
+- `content/{fr,en}/<page>/_index.html` — page bodies (one dir per page)
+- `layouts/baseof.html`, `layouts/partials/` — the whole theme (3 files)
+- `static/css/site.css` — the ONLY stylesheet; `static/{img,fonts}/`
+- `scripts/` — `check-assets.sh`, `check-clean.sh`, `run-visual.sh`,
+  `check-visual.mjs`, `font-census.mjs`
+- `.hugo-version` — pinned Hugo; the workflow fails if it disagrees
+- `public/` — build output, never committed
 
-## Layout
-
-- `hugo.toml`, `content/`, `layouts/`, `static/` — Hugo source
-- `public/` — built site (served as-is; `hugo build` regenerates it here)
-- `build_hugo.py` — original converter from the WordPress mirror (provenance).
-  It expects the WP mirror checkout next to it and outputs to `./hugo/`; the
-  mirror is archived in `../minutepapillons-wp-mirror-*.tar.gz`. Do not run it
-  without the mirror extracted.
+Adding a page: create `content/<lang>/<path>/_index.html` with front matter
+(`title`, `markup: html`, and a `menu.main` block for nav). Create the same
+path under the other language to get the switcher entry automatically.
 
 ## Build
 

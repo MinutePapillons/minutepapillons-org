@@ -39,8 +39,8 @@ title = "Minute Papillons"
 ogBase = "https://minutepapillons.github.io/minutepapillons-org/"
 
 [markup.goldmark.renderer]
-# Content files (.md) embed the original WordPress block markup as raw HTML;
-# allow it to pass through the markdown renderer unchanged.
+# Page bodies live in content/*/_index.html as hand-written HTML. Allow raw
+# HTML through the renderer so they are emitted verbatim.
 unsafe = true
 
 [security]

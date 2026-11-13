@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Convert the minutepapillons.org WordPress static mirror into a clean Hugo site (./hugo).
+"""ARCHIVED - historical record, do not run. See docs/README.md.
+
+Convert the minutepapillons.org WordPress static mirror into a clean Hugo site
+(./hugo). This produced the first Hugo port; the site has since been rewritten
+by hand (epic org-6i7) and no longer has the assets/{uploads,plugins,themes}
+layout this script emits. Kept only to show where the content came from.
 
 All WordPress references are stripped:
   - assets remapped: wp-content/* -> assets/{uploads,plugins,themes}/*, wp-includes/* -> assets/core/*
