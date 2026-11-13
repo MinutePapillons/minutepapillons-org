@@ -1,0 +1,274 @@
+/* Minute Papillons — site stylesheet.
+ *
+ * Structural layer: fonts, reset, tokens, and the page furniture written by
+ * layouts/ (header, hero, nav, footer). Content-block styling still lives in
+ * the inherited WordPress sheets until bead org-6i7.5 consolidates everything
+ * here; this file must therefore come AFTER them (see baseof.html).
+ */
+
+/* ---------------------------------------------------------------- fonts -- */
+/* One @font-face per family. Both files are woff2, preloaded in baseof.html.
+   The src URL is relative (../fonts/): Hugo's relativeURLs rewrites markup and
+   templates, but NOT url() inside a stylesheet, so an absolute /fonts/ would
+   404 once the site is served from its /minutepapillons-org/ subpath. */
+@font-face {
+  font-family: "GIANT BOYS";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/Giant-Boys.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Neue Machina";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/NeueMachina-Regular.woff2") format("woff2");
+}
+
+/* --------------------------------------------------------------- tokens -- */
+:root {
+  --mp-color-bg: #fef8ed;
+  --mp-color-title: #c83d4c;
+  --mp-color-ink: #853349;
+  --mp-font-display: "GIANT BOYS";
+  --mp-font-text: "Neue Machina";
+  --mp-content-width: 700px;
+  --mp-wide-width: 1280px;
+  /* Page gutter: matches the original ---preset--spacing--40. */
+  --mp-gutter: min(4rem, 5vw);
+}
+
+/* ---------------------------------------------------------------- reset -- */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background-color: var(--mp-color-bg);
+  color: var(--mp-color-ink);
+  font-family: var(--mp-font-text);
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+/* Visible to screen readers only (skip link, icon labels). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Keyboard-first skip link: off-screen until focused. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  background: var(--mp-color-title);
+  color: var(--mp-color-bg);
+  font-family: var(--mp-font-text);
+  text-decoration: none;
+}
+.skip-link:focus {
+  left: 0;
+  outline: 2px solid var(--mp-color-ink);
+  outline-offset: 2px;
+}
+
+/* Visible focus for every interactive element (a11y requirement of org-6i7.7). */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--mp-color-title);
+  outline-offset: 2px;
+}
+a { color: var(--mp-color-ink); }
+a:hover { text-decoration: none; }
+
+img { max-width: 100%; height: auto; }
+
+/* ---------------------------------------------------------- header/hero -- */
+/* The hero reproduces the original cover geometry: a full-bleed photo with a
+   centred inner column of min-height 500px carrying nav + logo. */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: clip;
+  min-height: 430px;
+  /* Full-bleed cover with the original's uniform 16.8px inset: the cover
+     block padded all four sides, so its inner column was viewport - 33.6px
+     (1246px at 1280), not viewport - 2*gutter. */
+  padding: 1.05rem;
+}
+.hero__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 17% 50%;
+  z-index: 0;
+}
+/* Grey wash the original applied over the photo (composited at 50%). */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: #8a8587;
+  opacity: 0.5;
+  z-index: 0;
+}
+.hero__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 500px;
+  max-width: var(--mp-wide-width);
+}
+
+/* ----------------------------------------------------------------- nav -- */
+.nav {
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+}
+.nav__list {
+  display: flex;
+  /* One row, like the original desktop menu. Now that each anchor is a single
+     <a> the five labels are ~30px wider in total than the baseline's
+     span-in-anchor nesting, so the row is allowed to shrink rather than wrap;
+     below the tablet breakpoint it wraps instead of scrolling.
+     (bead org-6i7.7 owns the final mobile treatment.) */
+  flex-wrap: nowrap;
+  min-width: 0;
+  justify-content: center;
+  align-items: center;
+  /* No gap: the anchors carry their own .5em/1em padding, which is what
+     spaced the original menu items apart. */
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: 100%;
+  font-family: var(--mp-font-display);
+  font-size: clamp(14px, 0.875rem + ((1vw - 3.2px) * 0.625), 20px);
+  font-weight: 500;
+  color: var(--mp-color-title);
+  background-color: var(--mp-color-bg);
+}
+/* Original nav items were flex containers holding a block anchor. */
+.nav__item { display: flex; align-items: center; margin: 0; }
+.nav__link {
+  display: block;
+  align-items: center;
+  /* .5em 1em, as the original navigation item padding. */
+  padding: 0.5em 1em;
+  color: var(--mp-color-title);
+  text-decoration: none;
+}
+.nav__link:hover { text-decoration: underline; }
+
+/* Language switcher sits outside .nav__list: as a flex child it shrank and
+   wrapped the menu labels (bead org-0nx). Text labels, not emoji flags. */
+.lang-switcher {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+  font-family: var(--mp-font-display);
+  font-size: clamp(12px, 0.75rem + ((1vw - 3.2px) * 0.5), 16px);
+  font-weight: 500;
+}
+.lang-switcher__link {
+  color: var(--mp-color-ink);
+  text-decoration: none;
+}
+.lang-switcher__link[aria-current="true"] {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* ---------------------------------------------------------------- logo -- */
+.site-logo { margin: 0; line-height: 0; }
+.site-logo a { display: inline-block; line-height: 0; }
+.site-logo img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
+
+/* -------------------------------------------------------------- footer -- */
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  /* The original footer carried the block gap as top+bottom margin. */
+  margin: 1.2rem 0 0;
+  padding: 0;
+}
+.social-links {
+  display: flex;
+  gap: 1.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* Icons size off 1em (as the original "large icon" preset did). */
+  font-size: 36px;
+}
+.social-links__item {
+  /* The original social buttons: cream glyph on a coral disc. */
+  color: var(--mp-color-bg);
+  background-color: var(--mp-color-title);
+  display: block;
+  border-radius: 9999px;
+  line-height: 1;
+  padding: 0.25em;
+}
+.social-links__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  text-decoration: none;
+  /* The original icon anchors collapsed their line box. */
+  line-height: 0;
+  padding: 0.25em 0;
+}
+.social-links__link svg {
+  fill: currentColor;
+  color: currentColor;
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+.site-footer__cols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  flex: 1 1 auto;
+  justify-content: flex-end;
+}
+.site-footer__mail,
+.site-footer__credit { margin: 0; }
+
+/* Below the tablet the five labels cannot share a row at a legible size, so
+   they wrap. The original hid them behind a JS-driven modal; bead org-6i7.7
+   replaces that with a no-JS treatment. */
+@media (max-width: 47.99rem) {
+  .nav__list { flex-wrap: wrap; }
+}

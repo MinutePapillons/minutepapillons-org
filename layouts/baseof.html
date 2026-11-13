@@ -5,54 +5,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>{{ .Title }}</title>
 <!-- OpenGraph + Twitter card (Photomaton-9yx).
-     og:url / og:image sont des URL ABSOLUES: les deux deploiements Pages
-     (alx.github.io + minutepapillons.github.io) partagent la meme build,
-     donc les tags pointent toujours vers le site org (canonical). -->
+     og:url / og:image are ABSOLUTE: both Pages deployments
+     (alx.github.io + minutepapillons.github.io) share one build, so the tags
+     always point at the org site (canonical). -->
 <meta property="og:site_name" content="{{ .Site.Title }}" />
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}" />
 <meta property="og:title" content="{{ .Title }}" />
 <meta property="og:description" content="{{ .Description | default .Site.Title }}" />
-<meta property="og:url" content="{{ .Site.Params.ogBase }}{{ .RelPermalink | replaceRE `^/` `` }}" />
-<meta property="og:image" content="{{ .Site.Params.ogBase }}assets/uploads/2026/01/LOGO-RB@3x-1024x575.png" />
+{{- /* Canonical OG URL: ogBase already carries the canonical origin+path,
+       so strip any deployment base path from the page path. */ -}}
+<meta property="og:url" content="{{ .Site.Params.ogBase }}{{ strings.TrimPrefix (strings.TrimSuffix "/" (urls.Parse site.BaseURL).Path) .RelPermalink | strings.TrimPrefix "/" }}" />
+<meta property="og:image" content="{{ .Site.Params.ogBase }}img/2026/01/LOGO-RB@3x-1024x575.png" />
 <meta property="og:image:alt" content="Minute Papillons — logo" />
 <meta property="og:locale" content="{{ .Site.Language.Locale }}" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="{{ .Title }}" />
 <meta name="twitter:description" content="{{ .Description | default .Site.Title }}" />
-<meta name="twitter:image" content="{{ .Site.Params.ogBase }}assets/uploads/2026/01/LOGO-RB@3x-1024x575.png" />
+<meta name="twitter:image" content="{{ .Site.Params.ogBase }}img/2026/01/LOGO-RB@3x-1024x575.png" />
+{{- /* .Permalink carries the deployment base path; strip it so Hugo's
+       relativeURLs rewrite does not produce /base/base/... */ -}}
+{{- $base := strings.TrimSuffix "/" (urls.Parse site.BaseURL).Path -}}
 {{ range .AllTranslations }}
-<link rel="alternate" hreflang="{{ .Language.Locale }}" href="{{ .Permalink }}" />
+<link rel="alternate" hreflang="{{ .Language.Locale }}" href="{{ strings.TrimPrefix $base .RelPermalink }}" />
 {{ end }}
-<link rel="alternate" hreflang="x-default" href="{{ range hugo.Sites }}{{ if .IsDefault }}{{ .Home.Permalink }}{{ end }}{{ end }}" />
-<link rel='stylesheet' href='/assets/core/blocks/navigation/style.min.css%3Fver=7.1.1.css' media='all' />
-<link rel='stylesheet' href='/assets/core/blocks/cover/style.min.css%3Fver=7.1.1.css' media='all' />
-<link rel='stylesheet' href='/assets/uploads/useanyfont/uaf.css%3Fver=1771419484.css' media='all' />
-<link rel='stylesheet' href='/assets/plugins/contact-lite/assets/css/frontend/modern/contact-full.min.css%3Fver=1.9.9.2.css' media='all' />
-<link rel='stylesheet' href='/css/head-inline.css' media='all' />
+<link rel="alternate" hreflang="x-default" href="{{ range hugo.Sites }}{{ if .IsDefault }}{{ strings.TrimPrefix $base .Home.RelPermalink }}{{ end }}{{ end }}" />
+<!-- The two faces the design actually uses: GIANT BOYS (titles + nav) and
+     Neue Machina (body). Preloaded so the first paint is already typeset;
+     their @font-face declarations live in /css/site.css. -->
+<link rel="preload" href="/fonts/Giant-Boys.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/fonts/NeueMachina-Regular.woff2" as="font" type="font/woff2" crossorigin />
+<!-- Inherited WordPress content sheets: still style the content blocks until
+     bead org-6i7.5 folds them into site.css. site.css must load LAST. -->
+<link rel="stylesheet" href="/css/navigation.css" media="all" />
+<link rel="stylesheet" href="/css/cover.css" media="all" />
+<link rel="stylesheet" href="/css/contact.css" media="all" />
+<link rel="stylesheet" href="/css/head-inline.css" media="all" />
+<link rel="stylesheet" href="/css/site.css" />
 </head>
-<body class="custom-logo embed-responsive theme-twentytwentyfour">
-<a class="skip-link screen-reader-text" href="#main">Aller au contenu</a>
-<div class="site-blocks">
+<body>
+<a class="skip-link" href="#main">{{ if eq .Language.Lang "fr" }}Aller au contenu{{ else }}Skip to content{{ end }}</a>
 {{ partial "header.html" . }}
 <main id="main">{{ block "main" . }}{{ end }}</main>
 {{ partial "footer.html" . }}
-</div>
-<script>
-/* minimal accessible menu toggle (replaces the previous CMS behaviour) */
-(function () {
-  var openBtn = document.querySelector('.block-navigation__responsive-container-open');
-  var box = document.querySelector('.block-navigation__responsive-container');
-  var closeBtn = document.querySelector('.block-navigation__responsive-close');
-  if (!openBtn || !box) return;
-  function setOpen(on) {
-    box.classList.toggle('is-menu-open', on);
-    openBtn.classList.toggle('is-menu-open', on);
-    box.setAttribute('aria-hidden', on ? 'false' : 'true');
-  }
-  openBtn.addEventListener('click', function () { setOpen(true); });
-  if (closeBtn) closeBtn.addEventListener('click', function () { setOpen(false); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
-})();
-</script>
 </body>
 </html>

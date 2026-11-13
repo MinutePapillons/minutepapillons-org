@@ -1,27 +1,53 @@
-<header class="block-template-part">
-<div class="block-cover alignwide is-light"><img decoding="async" width="2560" height="1606" class="block-cover__image-background image-150 size-full" alt="" src="/assets/uploads/2025/10/20251007_101002-1-scaled.jpg" style="object-position:17% 50%" data-object-fit="cover" data-object-position="17% 50%" srcset="/assets/uploads/2025/10/20251007_101002-1-scaled.jpg 2560w, /assets/uploads/2025/10/20251007_101002-1-300x188.jpg 300w, /assets/uploads/2025/10/20251007_101002-1-1024x643.jpg 1024w, /assets/uploads/2025/10/20251007_101002-1-768x482.jpg 768w, /assets/uploads/2025/10/20251007_101002-1-1536x964.jpg 1536w, /assets/uploads/2025/10/20251007_101002-1-2048x1285.jpg 2048w" sizes="(max-width: 2560px) 100vw, 2560px" /><span aria-hidden="true" class="block-cover__background has-background-dim-0 has-background-dim" style="background-color:#8a8587"></span><div class="block-cover__inner-container is-layout-flow block-cover-is-layout-flow"><nav style="font-size:clamp(14px, 0.875rem + ((1vw - 3.2px) * 0.625), 20px)" class="has-text-color has-custom-titre-color has-background has-custom-fond-background-color is-responsive items-justified-center no-wrap block-navigation has-giant-boys-font-family is-content-justification-center is-nowrap is-layout-flex container-core-navigation-is-layout-7a0b1db9 block-navigation-is-layout-flex" aria-label="Navigation"><button aria-haspopup="dialog" aria-label="Ouvrir le menu" class="block-navigation__responsive-container-open"
-			><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 5v1.5h14V5H5z"></path><path d="M5 12.8h14v-1.5H5v1.5z"></path><path d="M5 19h14v-1.5H5V19z"></path></svg></button>
-				<div class="block-navigation__responsive-container"  id="modal-1"
-				tabindex="-1"
-			>
-					<div class="block-navigation__responsive-close" tabindex="-1">
-						<div class="block-navigation__responsive-dialog"
-			>
-							<button aria-label="Fermer le menu" class="block-navigation__responsive-container-close"
-			><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="m13.06 12 6.47-6.47-1.06-1.06L12 10.94 5.53 4.47 4.47 5.53 10.94 12l-6.47 6.47 1.06 1.06L12 13.06l6.47 6.47 1.06-1.06L13.06 12Z"></path></svg></button>
-							<div class="block-navigation__responsive-container-content"
-			 id="modal-1-content">
-								<ul style="font-size:clamp(14px, 0.875rem + ((1vw - 3.2px) * 0.625), 20px)" class="block-navigation__container has-text-color has-custom-titre-color has-background has-custom-fond-background-color is-responsive items-justified-center no-wrap block-navigation has-giant-boys-font-family">{{ range site.Menus.main }}<li class="block-navigation-item block-navigation-link has-giant-boys-font-family"><a class="block-navigation-item__content"  href="{{ .URL }}"><span class="block-navigation-item__label">{{ .Name }}</span></a></li>{{ end }}</ul>
-<nav aria-label="Language" class="lang-switcher">{{ range .AllTranslations }}<a href="{{ .RelPermalink }}"{{ if eq .Language.Lang $.Language.Lang }} aria-current="true"{{ end }} title="{{ .Language.Label }}" aria-label="{{ .Language.Label }}">{{ if eq .Language.Lang "fr" }}🇫🇷{{ else if eq .Language.Lang "en" }}🇬🇧{{ else }}{{ .Language.Label }}{{ end }}</a>{{ end }}</nav>
-								
-							</div>
-						</div>
-					</div>
-				</div></nav>
+<header class="site-header">
+  {{- $base := strings.TrimSuffix "/" (urls.Parse site.BaseURL).Path -}}
+  <section class="hero">
+    <img class="hero__image" alt=""
+         src="/img/2025/10/20251007_101002-1-scaled.jpg"
+         srcset="/img/2025/10/20251007_101002-1-scaled.jpg 2560w,
+                 /img/2025/10/20251007_101002-1-300x188.jpg 300w,
+                 /img/2025/10/20251007_101002-1-1024x643.jpg 1024w,
+                 /img/2025/10/20251007_101002-1-768x482.jpg 768w,
+                 /img/2025/10/20251007_101002-1-1536x964.jpg 1536w,
+                 /img/2025/10/20251007_101002-1-2048x1285.jpg 2048w"
+         sizes="100vw" width="2560" height="1606" decoding="async" />
+    <div class="hero__inner">
+      <nav class="nav" aria-label="{{ if eq .Language.Lang "fr" }}Navigation principale{{ else }}Main navigation{{ end }}">
+        <ul class="nav__list">
+          {{- range site.Menus.main }}
+          {{- /* .URL already carries the deployment base path; strip it so relURL
+               does not produce /base/base/... under relativeURLs. */ -}}
+          {{- /* .URL / .RelPermalink carry the base path; $base strips it. */ -}}
+          {{- $href := .URL -}}
+          {{- with .Page }}{{ $href = .RelPermalink }}{{ end -}}
+          {{- $href = strings.TrimPrefix $base $href -}}
+          <li class="nav__item"><a class="nav__link" href="{{ $href }}"{{ if $.IsMenuCurrent "main" . }} aria-current="page"{{ end }}>{{ .Name }}</a></li>
+          {{- end }}
+        </ul>
+      </nav>
 
+      {{- /* Outside the nav flex container so the language links cannot shrink
+             or wrap the menu labels (bead org-0nx). Labels are text, not emoji
+             flags: emoji glyphs are missing from some platforms' fonts. */}}
+      <nav class="lang-switcher" aria-label="{{ if eq .Language.Lang "fr" }}Langue{{ else }}Language{{ end }}">
+        {{- range .AllTranslations }}
+        <a class="lang-switcher__link" href="{{ strings.TrimPrefix $base .RelPermalink }}" hreflang="{{ .Language.Lang }}" lang="{{ .Language.Lang }}"
+           {{- if eq .Language.Lang $.Language.Lang }} aria-current="true"{{ end }}>{{ upper .Language.Lang }}</a>
+        {{- end }}
+      </nav>
 
-<div class="block-group alignwide is-vertical is-content-justification-center is-layout-flex container-core-group-is-layout-d9d95ed6 block-group-is-layout-flex" style="min-height:500px"><div class="block-site-logo"><a href="/" class="custom-logo-link" rel="home" aria-current="page"><img width="432" height="242" src="/assets/uploads/2026/01/LOGO-RB@3x-scaled.png" class="custom-logo" alt="Minute papillons" decoding="async" fetchpriority="high" srcset="/assets/uploads/2026/01/LOGO-RB@3x-scaled.png 2560w, /assets/uploads/2026/01/LOGO-RB@3x-300x169.png 300w, /assets/uploads/2026/01/LOGO-RB@3x-1024x575.png 1024w, /assets/uploads/2026/01/LOGO-RB@3x-768x432.png 768w, /assets/uploads/2026/01/LOGO-RB@3x-1536x863.png 1536w, /assets/uploads/2026/01/LOGO-RB@3x-2048x1151.png 2048w" sizes="(max-width: 432px) 100vw, 432px" /></a></div></div>
-</div></div>
+      <div class="site-logo">
+        <a href="{{ strings.TrimPrefix $base ("/" | relLangURL) }}" rel="home">
+          <img src="/img/2026/01/LOGO-RB@3x-scaled.png" alt="Minute papillons"
+               srcset="/img/2026/01/LOGO-RB@3x-scaled.png 2560w,
+                       /img/2026/01/LOGO-RB@3x-300x169.png 300w,
+                       /img/2026/01/LOGO-RB@3x-1024x575.png 1024w,
+                       /img/2026/01/LOGO-RB@3x-768x432.png 768w,
+                       /img/2026/01/LOGO-RB@3x-1536x863.png 1536w,
+                       /img/2026/01/LOGO-RB@3x-2048x1151.png 2048w"
+               sizes="(max-width: 432px) 100vw, 432px" width="432" height="242"
+               decoding="async" fetchpriority="high" />
+        </a>
+      </div>
+    </div>
+  </section>
 </header>
-
-

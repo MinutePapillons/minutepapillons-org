@@ -1,0 +1,14 @@
+{
+  "name": "minutepapillons-org",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site Hugo de Minute Papillons. Ce package.json ne sert qu'aux outils de developpement (harnais visuel, releve de fontes) ; le site lui-meme se construit avec Hugo, sans Node.",
+  "scripts": {
+    "visual:baseline": "node scripts/check-visual.mjs --mode baseline",
+    "visual:compare": "node scripts/check-visual.mjs --mode compare",
+    "fonts:census": "node scripts/font-census.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.17.0"
+  }
+}
