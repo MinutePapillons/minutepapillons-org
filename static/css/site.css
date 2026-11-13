@@ -336,3 +336,199 @@ img { max-width: 100%; height: auto; }
 @media (prefers-reduced-motion: reduce) {
   .nav__toggle-icon { transition: none; }
 }
+
+/* --------------------------------------------------------------- content -- */
+/* Content blocks. These replace the WordPress block classes that
+   head-inline.css used to style; bead org-6i7.5 deletes those sheets, so the
+   layout has to live here for the pages to keep their look. Geometry was
+   measured from the WP build before rewriting (two columns 661/472 at 1280,
+   images 512px and 284px, stacked full-width below 782px). */
+
+/* The WP content container carried has-global-padding, i.e. the same
+   min(4rem,5vw) gutter the hero uses. Without it the columns run edge to edge
+   and the measured 661/472 split no longer reproduces. */
+.home,
+.content {
+  max-width: 100%;
+  padding-inline: var(--mp-gutter);
+}
+/* is-layout-flow spaced the block-level children only (p, figure, div); it
+   never touched inline or replaced elements, so <strong> and a bare <img>
+   keep margin:0 — a blanket `* > *` rule added 19.2px to both. */
+.home p, .home figure, .home div,
+.content p, .content figure, .content div,
+.content .story-hero__text {
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+/* The first block inside any nesting level loses its top margin, mirroring
+   `:where(.is-layout-constrained) > :first-child { margin-block-start: 0 }`. */
+.home :where(div, section) > :first-child,
+.content :where(div, section) > :first-child,
+.home > :first-child, .content > :first-child { margin-block-start: 0; }
+.home > :last-child, .content > :last-child { margin-block-end: 0; }
+
+/* Every element that is not a block child keeps the UA/global reset. */
+.home strong, .content strong,
+.home img, .content img { margin: 0; }
+/* Was h1.has-text-align-center.alignfull.block-post-title with inline
+   margin:0, plus a spacer block. The type scale is the theme's own
+   --preset--font-size--xx-large (h1 used it verbatim); reproduced literally
+   rather than approximated, so the rendered size matches to the hundredth. */
+.home__title {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(2.5rem, 2.5rem + ((1vw - 0.2rem) * 1.283), 3.27rem);
+  line-height: 1.15;
+  /* alignfull: the heading escaped the content gutter and spanned the page. */
+  margin-inline: calc(var(--mp-gutter) * -1);
+  padding-block-end: 1.2rem; /* the spacer block it replaced */
+}
+
+.home__cols,
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  /* No gap: the original column block had none. The two flex-bases sum to
+     120% and the shrink algorithm alone produces the measured 661/472 split,
+     so adding a gap here pulls ~24px out of that and misaligns both columns. */
+  gap: 0;
+}
+@media (min-width: 48rem) {
+  .home__cols,
+  .columns { flex-wrap: nowrap; }
+}
+
+.home__col,
+.column {
+  flex: 1 1 0;
+  min-width: 0;
+  /* Long unbreakable strings in the WP copy must not blow out the column. */
+  overflow-wrap: break-word;
+}
+@media (max-width: 47.99rem) {
+  .home__col,
+  .column { flex-basis: 100%; }
+}
+
+/* The original columns carried flex-basis:70% and 50% with flex-grow:0. Those
+   sum to 120%, so the flex algorithm shrinks them proportionally — that is
+   where the measured 661/472 split at 1280 comes from. Reproduced as-is rather
+   than approximated with two tidy percentages. */
+@media (min-width: 48rem) {
+  .home__col--main { flex-basis: 70%; flex-grow: 0; }
+  .home__col--aside { flex-basis: 50%; flex-grow: 0; }
+}
+
+.home__figure,
+.content-figure {
+  margin: 1.5rem 0;
+}
+.home__figure img,
+.content-figure img,
+.columns img {
+  height: auto;
+  border-radius: 1rem; /* was is-style-rounded */
+}
+.home__figure--main,
+.home__figure--aside { margin: 0; }
+/* The WP images were resized to fixed widths and kept them at every viewport
+   (the aside stayed 284px even at 375), so these are plain max-widths, not
+   viewport-conditional ones. */
+.home__figure--main img { width: 100%; max-width: min(512px, 100%); }
+.home__figure--aside img { width: 100%; max-width: min(284px, 100%); margin-left: auto; }
+
+/* ---- "la petite histoire" / "the short story" -------------------------- */
+
+.content__title {
+  /* margin-bottom was 0 in the original: the spacing came from the spacer
+     block that the rewrite replaces with the hero's own top margin. */
+  margin: 0;
+  text-align: center;
+  font-size: clamp(2.5rem, 2.5rem + ((1vw - 0.2rem) * 1.283), 3.27rem);
+  line-height: 1.15;
+  margin-inline: calc(var(--mp-gutter) * -1);
+}
+
+/* The WP cover block: full-bleed image, a 60% plum wash over it, and the
+   opening paragraph centred on top. min-height 300px was the inline value. */
+.story-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: 1em;
+  overflow: clip;
+  background-color: #8e2946;
+  /* Not full-bleed: the measured cover was 337.5px wide at 375, i.e. inset by
+     the content gutter on both sides like any other block. */
+  margin-block: 0 1.2rem;
+  color: #fff;
+}
+.story-hero__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 59% 45%;
+  margin: 0;
+}
+.story-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: #8e2946;
+  opacity: 0.6;
+}
+.story-hero__text {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  /* The cover block's own 1em padding already insets this, so it must not add
+     the page gutter on top of that (the original measured 303.9px at 375). */
+  padding-inline: 0;
+  /* It is not :first-child — the background <img> precedes it — so the
+     generic first-child reset misses it and the 1.2rem must be cleared here. */
+  margin: 0;
+  color: #fff;
+  text-align: center;
+}
+
+/* Media + text rows. The original ratios (26/38/28/21/39%) are per-instance
+   inline grid-template-columns, so they become modifiers here. */
+.media-text {
+  display: grid;
+  grid-template-columns: 50% 1fr;
+  grid-template-rows: auto;
+  align-items: center;
+  gap: 2rem;
+  direction: ltr;
+  margin-block: 1.2rem;
+}
+.media-text--reverse { grid-template-columns: 1fr 50%; }
+.media-text__media { margin: 0; }
+.media-text__media img { width: 100%; height: auto; border-radius: 1rem; }
+
+@media (min-width: 37.5rem) {
+  .media-text__media--21 { grid-column: 1; }
+  .media-text:has(.media-text__media--21) { grid-template-columns: 1fr 21%; }
+  .media-text:has(.media-text__media--26) { grid-template-columns: 26% 1fr; }
+  .media-text:has(.media-text__media--28) { grid-template-columns: 28% 1fr; }
+  .media-text:has(.media-text__media--38) { grid-template-columns: 38% 1fr; }
+  .media-text:has(.media-text__media--39) { grid-template-columns: 1fr 39%; }
+  .media-text--reverse:has(.media-text__media--28) { grid-template-columns: 1fr 28%; }
+  .media-text--reverse:has(.media-text__media--38) { grid-template-columns: 1fr 38%; }
+}
+
+/* is-stacked-on-mobile took effect at 600px, not the 782px used elsewhere. */
+@media (max-width: 37.49rem) {
+  .media-text,
+  .media-text--reverse { grid-template-columns: 100%; }
+  .media-text__media { order: -1; }
+}
+
+.content__wide { margin-inline: calc(var(--mp-gutter) * -1); }
+.content__center { text-align: center; }
