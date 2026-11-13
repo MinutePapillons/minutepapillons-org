@@ -1,16 +1,7 @@
-/* Minute Papillons — site stylesheet.
- *
- * Structural layer: fonts, reset, tokens, and the page furniture written by
- * layouts/ (header, hero, nav, footer). Content-block styling still lives in
- * the inherited WordPress sheets until bead org-6i7.5 consolidates everything
- * here; this file must therefore come AFTER them (see baseof.html).
- */
+/* Minute Papillons — site stylesheet. * * Structural layer: fonts, reset, tokens, and the page furniture written by * layouts/ (header, hero, nav, footer). Content-block styling still lives in * the inherited WordPress sheets until bead org-6i7.5 consolidates everything * here; this file must therefore come AFTER them (see baseof.html). */
 
 /* ---------------------------------------------------------------- fonts -- */
-/* One @font-face per family. Both files are woff2, preloaded in baseof.html.
-   The src URL is relative (../fonts/): Hugo's relativeURLs rewrites markup and
-   templates, but NOT url() inside a stylesheet, so an absolute /fonts/ would
-   404 once the site is served from its /minutepapillons-org/ subpath. */
+/* One @font-face per family. Both files are woff2, preloaded in baseof.html. The src URL is relative (../fonts/): Hugo's relativeURLs rewrites markup and templates, but NOT url() inside a stylesheet, so an absolute /fonts/ would 404 once the site is served from its /minutepapillons-org/ subpath. */
 @font-face {
   font-family: "GIANT BOYS";
   font-style: normal;
@@ -50,6 +41,23 @@ body {
   font-weight: 400;
   line-height: 1.55;
 }
+
+/* Global heading typography. This lived only in the inherited WordPress sheet; removing that sheet silently dropped every heading to the body font, which the harness caught. The type scale is the theme's own fluid preset. */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-family: var(--mp-font-display);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--mp-color-title);
+}
+h1 {
+  font-size: clamp(2.5rem, 2.5rem + ((1vw - 0.2rem) * 1.283), 3.27rem);
+  line-height: 1.15;
+}
+h2 { font-size: clamp(1.85rem, 1.85rem + ((1vw - 0.2rem) * 1.083), 2.5rem); }
+h3 { font-size: clamp(1.39rem, 1.39rem + ((1vw - 0.2rem) * 0.767), 1.85rem); }
+h4, h5, h6 { font-size: 1.05rem; }
 
 /* Visible to screen readers only (skip link, icon labels). */
 .sr-only {
@@ -95,8 +103,7 @@ a:hover { text-decoration: none; }
 img { max-width: 100%; height: auto; }
 
 /* ---------------------------------------------------------- header/hero -- */
-/* The hero reproduces the original cover geometry: a full-bleed photo with a
-   centred inner column of min-height 500px carrying nav + logo. */
+/* The hero reproduces the original cover geometry: a full-bleed photo with a centred inner column of min-height 500px carrying nav + logo. */
 .hero {
   position: relative;
   display: flex;
@@ -104,9 +111,7 @@ img { max-width: 100%; height: auto; }
   justify-content: center;
   overflow: clip;
   min-height: 430px;
-  /* Full-bleed cover with the original's uniform 16.8px inset: the cover
-     block padded all four sides, so its inner column was viewport - 33.6px
-     (1246px at 1280), not viewport - 2*gutter. */
+  /* Full-bleed cover with the original's uniform 16.8px inset: the cover block padded all four sides, so its inner column was viewport - 33.6px (1246px at 1280), not viewport - 2*gutter. */
   padding: 1.05rem;
 }
 .hero__image {
@@ -140,20 +145,14 @@ img { max-width: 100%; height: auto; }
 }
 
 /* ----------------------------------------------------------------- nav -- */
-/* Desktop: the <details> wrapper is inert. `display: contents` removes its box
-   so the <li> row behaves exactly as it did before the disclosure was added,
-   and the <summary> is hidden (it is the mobile-only toggle). */
+/* Desktop: the <details> wrapper is inert. `display: contents` removes its box so the <li> row behaves exactly as it did before the disclosure was added, and the <summary> is hidden (it is the mobile-only toggle). */
 .nav {
   display: flex;
   justify-content: center;
   max-width: 100%;
 }
 .nav__toggle { display: none; }
-/* Desktop only: a closed <details> hides its content through the UA's own
-   slot, so `display: contents` alone is not enough — force the content back
-   on so the row stays inline. Scoped to the desktop query on purpose: on
-   mobile the panel must start collapsed. Browsers without ::details-content
-   keep the (still operable) summary toggle on desktop. */
+/* Desktop only: a closed <details> hides its content through the UA's own slot, so `display: contents` alone is not enough — force the content back on so the row stays inline. Scoped to the desktop query on purpose: on mobile the panel must start collapsed. Browsers without ::details-content keep the (still operable) summary toggle on desktop. */
 @media (min-width: 48rem) {
   /* Drop the <details> box so the <li> row lays out exactly as a bare <ul>. */
   .nav__disclosure { display: contents; }
@@ -165,8 +164,7 @@ img { max-width: 100%; height: auto; }
 
 .nav__list {
   display: flex;
-  /* One row, like the original desktop menu. Each anchor carries its own
-     .5em/1em padding, which is what spaced the original items apart. */
+  /* One row, like the original desktop menu. Each anchor carries its own .5em/1em padding, which is what spaced the original items apart. */
   flex-wrap: nowrap;
   min-width: 0;
   justify-content: center;
@@ -194,8 +192,7 @@ img { max-width: 100%; height: auto; }
 }
 .nav__link:hover { text-decoration: underline; }
 
-/* Language switcher sits outside .nav__list: as a flex child it shrank and
-   wrapped the menu labels (bead org-0nx). Text labels, not emoji flags. */
+/* Language switcher sits outside .nav__list: as a flex child it shrank and wrapped the menu labels (bead org-0nx). Text labels, not emoji flags. */
 .lang-switcher {
   display: flex;
   justify-content: center;
@@ -279,11 +276,7 @@ img { max-width: 100%; height: auto; }
 .site-footer__mail,
 .site-footer__credit { margin: 0; }
 
-/* Below the tablet the five labels cannot share a row at a legible size, so
-   they move behind a native <details> disclosure. The original hid them behind
-   a JS-driven modal with a hand-rolled toggle; <details>/<summary> gives the
-   same affordance with keyboard support, screen-reader semantics and
-   Escape-to-close from the user agent, and zero script (bead org-6i7.7). */
+/* Below the tablet the five labels cannot share a row at a legible size, so they move behind a native <details> disclosure. The original hid them behind a JS-driven modal with a hand-rolled toggle; <details>/<summary> gives the same affordance with keyboard support, screen-reader semantics and Escape-to-close from the user agent, and zero script (bead org-6i7.7). */
 @media (max-width: 47.99rem) {
   .nav {
     flex-direction: column;
@@ -307,8 +300,7 @@ img { max-width: 100%; height: auto; }
     cursor: pointer;
     list-style: none;
   }
-  /* Drop the default disclosure triangle in every engine; the custom icon
-     below replaces it so the control matches the type. */
+  /* Drop the default disclosure triangle in every engine; the custom icon below replaces it so the control matches the type. */
   .nav__toggle::-webkit-details-marker { display: none; }
   .nav__toggle-icon {
     width: 0;
@@ -338,31 +330,22 @@ img { max-width: 100%; height: auto; }
 }
 
 /* --------------------------------------------------------------- content -- */
-/* Content blocks. These replace the WordPress block classes that
-   head-inline.css used to style; bead org-6i7.5 deletes those sheets, so the
-   layout has to live here for the pages to keep their look. Geometry was
-   measured from the WP build before rewriting (two columns 661/472 at 1280,
-   images 512px and 284px, stacked full-width below 782px). */
+/* Content blocks. These replace the WordPress block classes that head-inline.css used to style; bead org-6i7.5 deletes those sheets, so the layout has to live here for the pages to keep their look. Geometry was measured from the WP build before rewriting (two columns 661/472 at 1280, images 512px and 284px, stacked full-width below 782px). */
 
-/* The WP content container carried has-global-padding, i.e. the same
-   min(4rem,5vw) gutter the hero uses. Without it the columns run edge to edge
-   and the measured 661/472 split no longer reproduces. */
+/* The WP content container carried has-global-padding, i.e. the same min(4rem,5vw) gutter the hero uses. Without it the columns run edge to edge and the measured 661/472 split no longer reproduces. */
 .home,
 .content {
   max-width: 100%;
   padding-inline: var(--mp-gutter);
 }
-/* is-layout-flow spaced the block-level children only (p, figure, div); it
-   never touched inline or replaced elements, so <strong> and a bare <img>
-   keep margin:0 — a blanket `* > *` rule added 19.2px to both. */
+/* is-layout-flow spaced the block-level children only (p, figure, div); it never touched inline or replaced elements, so <strong> and a bare <img> keep margin:0 — a blanket `* > *` rule added 19.2px to both. */
 .home p, .home figure, .home div,
 .content p, .content figure, .content div,
 .content .story-hero__text {
   margin-block-start: 0;
   margin-block-end: 0;
 }
-/* The first block inside any nesting level loses its top margin, mirroring
-   `:where(.is-layout-constrained) > :first-child { margin-block-start: 0 }`. */
+/* The first block inside any nesting level loses its top margin, mirroring `:where(.is-layout-constrained) > :first-child { margin-block-start: 0 }`. */
 .home :where(div, section) > :first-child,
 .content :where(div, section) > :first-child,
 .home > :first-child, .content > :first-child { margin-block-start: 0; }
@@ -371,10 +354,7 @@ img { max-width: 100%; height: auto; }
 /* Every element that is not a block child keeps the UA/global reset. */
 .home strong, .content strong,
 .home img, .content img { margin: 0; }
-/* Was h1.has-text-align-center.alignfull.block-post-title with inline
-   margin:0, plus a spacer block. The type scale is the theme's own
-   --preset--font-size--xx-large (h1 used it verbatim); reproduced literally
-   rather than approximated, so the rendered size matches to the hundredth. */
+/* Was h1.has-text-align-center.alignfull.block-post-title with inline margin:0, plus a spacer block. The type scale is the theme's own --preset--font-size--xx-large (h1 used it verbatim); reproduced literally rather than approximated, so the rendered size matches to the hundredth. */
 .home__title {
   margin: 0;
   text-align: center;
@@ -385,37 +365,28 @@ img { max-width: 100%; height: auto; }
   padding-block-end: 1.2rem; /* the spacer block it replaced */
 }
 
-.home__cols,
-.columns {
+.home__cols {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  /* No gap: the original column block had none. The two flex-bases sum to
-     120% and the shrink algorithm alone produces the measured 661/472 split,
-     so adding a gap here pulls ~24px out of that and misaligns both columns. */
+  /* No gap: the original column block had none. The two flex-bases sum to 120% and the shrink algorithm alone produces the measured 661/472 split, so adding a gap here pulls ~24px out of that and misaligns both columns. */
   gap: 0;
 }
 @media (min-width: 48rem) {
-  .home__cols,
-  .columns { flex-wrap: nowrap; }
+  .home__cols { flex-wrap: nowrap; }
 }
 
-.home__col,
-.column {
+.home__col {
   flex: 1 1 0;
   min-width: 0;
   /* Long unbreakable strings in the WP copy must not blow out the column. */
   overflow-wrap: break-word;
 }
 @media (max-width: 47.99rem) {
-  .home__col,
-  .column { flex-basis: 100%; }
+  .home__col { flex-basis: 100%; }
 }
 
-/* The original columns carried flex-basis:70% and 50% with flex-grow:0. Those
-   sum to 120%, so the flex algorithm shrinks them proportionally — that is
-   where the measured 661/472 split at 1280 comes from. Reproduced as-is rather
-   than approximated with two tidy percentages. */
+/* The original columns carried flex-basis:70% and 50% with flex-grow:0. Those sum to 120%, so the flex algorithm shrinks them proportionally — that is where the measured 661/472 split at 1280 comes from. Reproduced as-is rather than approximated with two tidy percentages. */
 @media (min-width: 48rem) {
   .home__col--main { flex-basis: 70%; flex-grow: 0; }
   .home__col--aside { flex-basis: 50%; flex-grow: 0; }
@@ -426,24 +397,20 @@ img { max-width: 100%; height: auto; }
   margin: 1.5rem 0;
 }
 .home__figure img,
-.content-figure img,
-.columns img {
+.content-figure img {
   height: auto;
   border-radius: 1rem; /* was is-style-rounded */
 }
 .home__figure--main,
 .home__figure--aside { margin: 0; }
-/* The WP images were resized to fixed widths and kept them at every viewport
-   (the aside stayed 284px even at 375), so these are plain max-widths, not
-   viewport-conditional ones. */
+/* The WP images were resized to fixed widths and kept them at every viewport (the aside stayed 284px even at 375), so these are plain max-widths, not viewport-conditional ones. */
 .home__figure--main img { width: 100%; max-width: min(512px, 100%); }
 .home__figure--aside img { width: 100%; max-width: min(284px, 100%); margin-left: auto; }
 
 /* ---- "la petite histoire" / "the short story" -------------------------- */
 
 .content__title {
-  /* margin-bottom was 0 in the original: the spacing came from the spacer
-     block that the rewrite replaces with the hero's own top margin. */
+  /* margin-bottom was 0 in the original: the spacing came from the spacer block that the rewrite replaces with the hero's own top margin. */
   margin: 0;
   text-align: center;
   font-size: clamp(2.5rem, 2.5rem + ((1vw - 0.2rem) * 1.283), 3.27rem);
@@ -451,8 +418,7 @@ img { max-width: 100%; height: auto; }
   margin-inline: calc(var(--mp-gutter) * -1);
 }
 
-/* The WP cover block: full-bleed image, a 60% plum wash over it, and the
-   opening paragraph centred on top. min-height 300px was the inline value. */
+/* The WP cover block: full-bleed image, a 60% plum wash over it, and the opening paragraph centred on top. min-height 300px was the inline value. */
 .story-hero {
   position: relative;
   display: flex;
@@ -462,8 +428,7 @@ img { max-width: 100%; height: auto; }
   padding: 1em;
   overflow: clip;
   background-color: #8e2946;
-  /* Not full-bleed: the measured cover was 337.5px wide at 375, i.e. inset by
-     the content gutter on both sides like any other block. */
+  /* Not full-bleed: the measured cover was 337.5px wide at 375, i.e. inset by the content gutter on both sides like any other block. */
   margin-block: 0 1.2rem;
   color: #fff;
 }
@@ -487,18 +452,15 @@ img { max-width: 100%; height: auto; }
   position: relative;
   z-index: 1;
   max-width: 100%;
-  /* The cover block's own 1em padding already insets this, so it must not add
-     the page gutter on top of that (the original measured 303.9px at 375). */
+  /* The cover block's own 1em padding already insets this, so it must not add the page gutter on top of that (the original measured 303.9px at 375). */
   padding-inline: 0;
-  /* It is not :first-child — the background <img> precedes it — so the
-     generic first-child reset misses it and the 1.2rem must be cleared here. */
+  /* It is not :first-child — the background <img> precedes it — so the generic first-child reset misses it and the 1.2rem must be cleared here. */
   margin: 0;
   color: #fff;
   text-align: center;
 }
 
-/* Media + text rows. The original ratios (26/38/28/21/39%) are per-instance
-   inline grid-template-columns, so they become modifiers here. */
+/* Media + text rows. The original ratios (26/38/28/21/39%) are per-instance inline grid-template-columns, so they become modifiers here. */
 .media-text {
   display: grid;
   grid-template-columns: 50% 1fr;
@@ -534,10 +496,7 @@ img { max-width: 100%; height: auto; }
 .content__center { text-align: center; }
 
 /* ---- "trouver nos cabines" / "find our booths" ------------------------- */
-/* Lifted verbatim from the inline <style> block that used to ship inside the
-   content file, so the card geometry is the original authored CSS and not a
-   measurement approximation. Only the hooks changed: figure/cabine-body became
-   li/children when the card list turned into a real <ul>. */
+/* Lifted verbatim from the inline <style> block that used to ship inside the content file, so the card geometry is the original authored CSS and not a measurement approximation. Only the hooks changed: figure/cabine-body became li/children when the card list turned into a real <ul>. */
 
 .cabine-grid {
   display: grid;
@@ -563,8 +522,7 @@ img { max-width: 100%; height: auto; }
   height: 260px;
   object-fit: cover;
 }
-/* .cabine-body kept as a wrapper (now .cabine-card__body) so the authored
-   padding/gap applies unchanged instead of being re-derived per element. */
+/* .cabine-body kept as a wrapper (now .cabine-card__body) so the authored padding/gap applies unchanged instead of being re-derived per element. */
 .cabine-card__body {
   display: flex;
   flex-direction: column;
@@ -606,21 +564,16 @@ img { max-width: 100%; height: auto; }
 .map { width: 100%; max-width: 800px; height: 600px; border: 0; }
 
 /* ---- "louez-moi" ------------------------------------------------------- */
-/* Two side-by-side pitch columns, each: coloured heading, a 150px arrow, a
-   sub-heading and a paragraph whose line breaks are authored (<br>), so the
-   measure is fixed rather than left to the container. */
+/* Two side-by-side pitch columns, each: coloured heading, a 150px arrow, a sub-heading and a paragraph whose line breaks are authored (<br>), so the measure is fixed rather than left to the container. */
 
 .rent {
   display: flex;
-  /* is-nowrap: the two pitches stayed side by side even at 375px. Letting
-     them wrap stacked each column to the full 337.5px and the authored <br>
-     lines then had nothing to wrap against (baseline paragraph was 210px). */
+  /* is-nowrap: the two pitches stayed side by side even at 375px. Letting them wrap stacked each column to the full 337.5px and the authored <br> lines then had nothing to wrap against (baseline paragraph was 210px). */
   flex-wrap: nowrap;
   justify-content: center;
   align-items: flex-start;
   max-width: 100%;
-  /* No gap and no flex-grow in the original: each column sized to its own
-     content (210px paragraphs) and the centred pair simply overflowed. */
+  /* No gap and no flex-grow in the original: each column sized to its own content (210px paragraphs) and the centred pair simply overflowed. */
   gap: 0;
   margin-block-start: 1.2rem;
 }
@@ -628,22 +581,15 @@ img { max-width: 100%; height: auto; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Equal-share flex columns. Measured baseline widths: 210 @375, 337 @768,
-     502 @1280 — i.e. they track the available width, so a fixed basis is
-     wrong and min-width:0 (not auto) is what lets them halve cleanly. */
+  /* Equal-share flex columns. Measured baseline widths: 210 @375, 337 @768, 502 @1280 — i.e. they track the available width, so a fixed basis is wrong and min-width:0 (not auto) is what lets them halve cleanly. */
   flex: 1 1 0;
-  /* min-width:0 shrinks past the authored <br> measure. The original floored
-     at its own content width and overflowed horizontally instead — and that
-     floor differs per language (FR measured 210px, EN 200px), so it has to be
-     content-derived rather than one hard-coded number. */
+  /* min-width:0 shrinks past the authored <br> measure. The original floored at its own content width and overflowed horizontally instead — and that floor differs per language (FR measured 210px, EN 200px), so it has to be content-derived rather than one hard-coded number. */
   min-width: min-content;
   text-align: center;
 }
 .rent__heading {
   margin: 0;
-  /* The theme's --preset--font-size--x-large, used verbatim. No line-height:
-     the original h2 inherited `normal`, which the harness measures at
-     36.2348px — forcing 1.15 shortened it to 34.725px. */
+  /* The theme's --preset--font-size--x-large, used verbatim. No line-height: the original h2 inherited `normal`, which the harness measures at 36.2348px — forcing 1.15 shortened it to 34.725px. */
   font-size: clamp(1.85rem, 1.85rem + ((1vw - 0.2rem) * 1.083), 2.5rem);
   color: var(--mp-color-ink);
 }
@@ -660,16 +606,12 @@ img { max-width: 100%; height: auto; }
   font-size: 1rem;
   font-weight: 700;
 }
-/* The paragraphs were the only block children of an is-layout-flow group, so
-   they carried the 1.2rem top margin; the first one is reset. They also
-   shrink-to-fit (baseline 210px at 375) because the column centres its items
-   and align-self makes the <p> stop stretching. */
+/* The paragraphs were the only block children of an is-layout-flow group, so they carried the 1.2rem top margin; the first one is reset. They also shrink-to-fit (baseline 210px at 375) because the column centres its items and align-self makes the <p> stop stretching. */
 .rent__col p {
   margin-block: 1.2rem 0;
   text-align: left;
   align-self: center;
-  /* align-self alone leaves width:auto at the container width; the original
-     box was shrink-to-fit at the widest authored line (210px at 375). */
+  /* align-self alone leaves width:auto at the container width; the original box was shrink-to-fit at the widest authored line (210px at 375). */
   width: fit-content;
 }
 .rent__col p:first-of-type { margin-block-start: 0; }
@@ -679,8 +621,7 @@ img { max-width: 100%; height: auto; }
 }
 
 /* ---- contact form (on-parle-de-votre-projet) --------------------------- */
-/* Replaces the contact-lite plugin: a native form posting to Formspree, using
-   the plugin's own colour and sizing variables so the look carries over. */
+/* Replaces the contact-lite plugin: a native form posting to Formspree, using the plugin's own colour and sizing variables so the look carries over. */
 
 .contact { margin-block-start: 1.2rem; }
 .contact__heading {
@@ -739,8 +680,7 @@ img { max-width: 100%; height: auto; }
   cursor: pointer;
 }
 
-/* Honeypot: off-screen rather than display:none, so bots that skip hidden
-   fields still fill it in. Never focusable, never announced. */
+/* Honeypot: off-screen rather than display:none, so bots that skip hidden fields still fill it in. Never focusable, never announced. */
 .contact-form__honeypot {
   position: absolute;
   width: 1px;
@@ -753,23 +693,18 @@ img { max-width: 100%; height: auto; }
 /* ---- FAQ --------------------------------------------------------------- */
 .faq {
   display: flex;
-  /* The original never stacked: at 375 the image was still only 43.6px wide
-     beside a 274.7px text column, and the 1.2rem gap is what separates them. */
+  /* The original never stacked: at 375 the image was still only 43.6px wide beside a 274.7px text column, and the 1.2rem gap is what separates them. */
   flex-wrap: nowrap;
   align-items: flex-start;
   gap: 1.2rem;
   margin-block-start: 1.2rem;
 }
 .faq__image {
-  /* Measured: the image took 12.9% of the row at 375 and 13.7% at 1280, i.e.
-     it scaled with the row rather than holding an intrinsic width. A
-     percentage basis reproduces both; any auto/intrinsic sizing did not. */
+  /* Measured: the image took 12.9% of the row at 375 and 13.7% at 1280, i.e. it scaled with the row rather than holding an intrinsic width. A percentage basis reproduces both; any auto/intrinsic sizing did not. */
   flex: 0 0 13%;
   width: 13%;
   height: auto;
-  /* The text column was capped rather than allowed to fill: measured 864px at
-     1280 (76% of the row) against 274px at 375 (81%), so the cap only binds on
-     wide screens. 54rem = 864px. */
+  /* The text column was capped rather than allowed to fill: measured 864px at 1280 (76% of the row) against 274px at 375 (81%), so the cap only binds on wide screens. 54rem = 864px. */
   margin-inline-end: auto;
 }
 .faq__body {
@@ -779,8 +714,7 @@ img { max-width: 100%; height: auto; }
   min-width: 0;
   max-width: 54rem;
 }
-/* The questions were <strong> paragraphs; they are real headings now so the
-   answer text stays a paragraph and the outline is navigable. */
+/* The questions were <strong> paragraphs; they are real headings now so the answer text stays a paragraph and the outline is navigable. */
 .faq__q {
   margin: 0;
   font-size: 1rem;
@@ -792,8 +726,7 @@ img { max-width: 100%; height: auto; }
 
 
 /* ---- "acheter le kit" -------------------------------------------------- */
-/* The theme's --preset--font-size--x-large, no line-height override, and the
-   is-layout-flow 1.2rem top margin: measured 30.196px / 36.235px / 19.2px. */
+/* The theme's --preset--font-size--x-large, no line-height override, and the is-layout-flow 1.2rem top margin: measured 30.196px / 36.235px / 19.2px. */
 .kit__heading {
   margin-block: 1.2rem 0;
   font-size: clamp(1.85rem, 1.85rem + ((1vw - 0.2rem) * 1.083), 2.5rem);
@@ -809,9 +742,7 @@ img { max-width: 100%; height: auto; }
 .agenda {
   display: flex;
   flex-direction: column;
-  /* The WP group was a vertical flex with content-justification center, so
-     every child shrank to its content: the h2 measured 120px, not the full
-     337.5px row. */
+  /* The WP group was a vertical flex with content-justification center, so every child shrank to its content: the h2 measured 120px, not the full 337.5px row. */
   align-items: center;
   margin-block-start: 1.2rem;
 }
