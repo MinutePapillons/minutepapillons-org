@@ -34,19 +34,19 @@
           {{- $href = strings.TrimPrefix $base $href -}}
           <li class="nav__item"><a class="nav__link" href="{{ $href }}"{{ if $.IsMenuCurrent "main" . }} aria-current="page"{{ end }}>{{ .Name }}</a></li>
           {{- end }}
+          {{- /* Flags sit INSIDE the menu row, as they did on the original site
+                 (it rendered 🇫🇷 / 🇬🇧 as the last nav items). They were moved out
+                 to a separate row and turned into FR/EN text during the
+                 refactor; both were regressions against the original look. */ -}}
+          {{- if gt (len .AllTranslations) 1 }}
+          {{- range .AllTranslations }}
+          <li class="nav__item nav__item--lang"><a class="nav__link nav__link--lang" href="{{ strings.TrimPrefix $base .RelPermalink }}" hreflang="{{ .Language.Lang }}" lang="{{ .Language.Lang }}" title="{{ .Language.Label }}" aria-label="{{ .Language.Label }}"{{ if eq .Language.Lang $.Language.Lang }} aria-current="true"{{ end }}>{{ if eq .Language.Lang "fr" }}🇫🇷{{ else if eq .Language.Lang "en" }}🇬🇧{{ else }}{{ .Language.Label }}{{ end }}</a></li>
+          {{- end }}
+          {{- end }}
         </ul>
         </details>
       </nav>
 
-      {{- /* Outside the nav flex container so the language links cannot shrink
-             or wrap the menu labels (bead org-0nx). Labels are text, not emoji
-             flags: emoji glyphs are missing from some platforms' fonts. */}}
-      <nav class="lang-switcher" aria-label="{{ if eq .Language.Lang "fr" }}Langue{{ else }}Language{{ end }}">
-        {{- range .AllTranslations }}
-        <a class="lang-switcher__link" href="{{ strings.TrimPrefix $base .RelPermalink }}" hreflang="{{ .Language.Lang }}" lang="{{ .Language.Lang }}"
-           {{- if eq .Language.Lang $.Language.Lang }} aria-current="true"{{ end }}>{{ upper .Language.Lang }}</a>
-        {{- end }}
-      </nav>
 
       <div class="site-logo">
         <a href="{{ strings.TrimPrefix $base ("/" | relLangURL) }}" rel="home">

@@ -111,7 +111,11 @@ a:hover { text-decoration: none; }
 img { max-width: 100%; height: auto; }
 
 /* ---------------------------------------------------------- header/hero -- */
-/* The hero reproduces the original cover geometry: a full-bleed photo with a centred inner column of min-height 500px carrying nav + logo. */
+/* The hero reproduces the original cover geometry: a full-bleed photo with a
+   centred inner column of min-height 500px carrying nav + logo.
+   Measured on the live WordPress site at 1280: the cover is 1280x634.8 with a
+   uniform 16.8px inset, and the nav sits at y=16.8 - i.e. INSIDE the cover at
+   its top edge, not above the photo and not centred in it. */
 .hero {
   position: relative;
   display: flex;
@@ -119,7 +123,6 @@ img { max-width: 100%; height: auto; }
   justify-content: center;
   overflow: clip;
   min-height: 430px;
-  /* Full-bleed cover with the original's uniform 16.8px inset: the cover block padded all four sides, so its inner column was viewport - 33.6px (1246px at 1280), not viewport - 2*gutter. */
   padding: 1.05rem;
 }
 .hero__image {
@@ -151,6 +154,28 @@ img { max-width: 100%; height: auto; }
   min-height: 500px;
   max-width: var(--mp-wide-width);
 }
+/* The nav is pinned to the TOP of the cover, not centred with the logo.
+   Live WordPress measurement at 1280: cover 634.8 tall with a uniform 16.8px
+   padding, inner container 601.2 at y=16.8, and its two children are the nav
+   (82 tall at y=16.8) and a 500px-tall logo group starting at y=118. 82 + 500
+   is 582, so a 19.2px gap sits between them and 582 + 19.2 = 601.2.
+   Reproducing that literally: the inner column is a flex column with a 1.2rem
+   gap, the nav is its first item, and the whole group is left-aligned so the
+   logo block keeps its measured 500px height. */
+@media (min-width: 48rem) {
+  .hero__inner {
+    justify-content: flex-start;
+    gap: 1.2rem;
+  }
+  .nav { flex: 0 0 auto; }
+  .site-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 500px;
+    width: 100%;
+  }
+}
 
 /* ----------------------------------------------------------------- nav -- */
 /* Desktop: the <details> wrapper is inert. `display: contents` removes its box so the <li> row behaves exactly as it did before the disclosure was added, and the <summary> is hidden (it is the mobile-only toggle). */
@@ -158,6 +183,14 @@ img { max-width: 100%; height: auto; }
   display: flex;
   justify-content: center;
   max-width: 100%;
+}
+/* The original nav carried has-background + a custom cream background colour,
+   so it rendered as an opaque 1246x82 band across the photo rather than as
+   transparent text. Its items are 82px tall (20px font, 1.55 line-height,
+   10px block padding), which is what gives the band its height. */
+.nav {
+  background-color: var(--mp-color-bg);
+  color: var(--mp-color-title);
 }
 .nav__toggle { display: none; }
 /* Desktop only: a closed <details> hides its content through the UA's own slot, so `display: contents` alone is not enough — force the content back on so the row stays inline. Scoped to the desktop query on purpose: on mobile the panel must start collapsed. Browsers without ::details-content keep the (still operable) summary toggle on desktop. */
@@ -189,7 +222,7 @@ img { max-width: 100%; height: auto; }
   background-color: var(--mp-color-bg);
 }
 /* Original nav items were flex containers holding a block anchor. */
-.nav__item { display: flex; align-items: center; margin: 0; }
+.nav__item { display: flex; align-items: stretch; margin: 0; }
 .nav__link {
   display: block;
   align-items: center;
@@ -200,27 +233,34 @@ img { max-width: 100%; height: auto; }
 }
 .nav__link:hover { text-decoration: underline; }
 
-/* Language switcher sits outside .nav__list: as a flex child it shrank and wrapped the menu labels (bead org-0nx). Text labels, not emoji flags. */
-.lang-switcher {
-  display: flex;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-top: 0.25rem;
-  font-family: var(--mp-font-display);
-  font-size: clamp(12px, 0.75rem + ((1vw - 3.2px) * 0.5), 16px);
-  font-weight: 500;
-}
-.lang-switcher__link {
-  color: var(--mp-color-ink);
+/* Language flags, rendered as the last items of the menu row exactly as the
+   original did. They are emoji, so they need a font stack that actually has
+   colour glyphs — the display face (GIANT BOYS) has none, which is why the
+   refactor swapped them for FR/EN text. That was a visible regression from the
+   original look, so the flags are back with an explicit emoji fallback. */
+.nav__item--lang { display: flex; align-items: center; }
+.nav__link--lang {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji",
+    "Twemoji Mozilla", "EmojiOne Color", sans-serif;
+  font-size: 1.15em;
+  line-height: 1;
   text-decoration: none;
 }
-.lang-switcher__link[aria-current="true"] {
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
+.nav__link--lang[aria-current="true"] {
+  text-decoration: none;
+  opacity: 0.55;
 }
 
 /* ---------------------------------------------------------------- logo -- */
+/* The logo renders 160x16 on the live site: the custom-logo block caps it far
+   below the 432x242 the file declares, so the huge intrinsic size must not be
+   allowed to drive layout. */
 .site-logo { margin: 0; line-height: 0; }
+.site-logo img {
+  width: 160px;
+  height: auto;
+  max-width: 100%;
+}
 .site-logo a { display: inline-block; line-height: 0; }
 .site-logo img {
   width: 100%;
@@ -229,15 +269,22 @@ img { max-width: 100%; height: auto; }
 }
 
 /* -------------------------------------------------------------- footer -- */
+/* Measured on the live WordPress footer at 1280: the outer <footer> is
+   transparent and the red band is its one child (the columns block) —
+   background rgb(200,61,76), full viewport width, padding 21px 0, cream text
+   rgb(254,248,237), split into three equal 426.7px columns whose contents are
+   vertically centred. So the red line belongs to the columns wrapper, and the
+   whole strip runs edge to edge rather than staying inside the page gutter. */
 .site-footer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
   /* The original footer carried the block gap as top+bottom margin. */
   margin: 1.2rem 0 0;
-  padding: 0;
+  /* 21px measured on the live footer (96 = 54px icon + 2*21). */
+  padding: 21px 0;
+  background-color: var(--mp-color-title);
+  color: var(--mp-color-bg);
 }
 .social-links {
   display: flex;
@@ -245,8 +292,10 @@ img { max-width: 100%; height: auto; }
   margin: 0;
   padding: 0;
   list-style: none;
-  /* Icons size off 1em (as the original "large icon" preset did). */
+  /* The social list is 54x54 per icon and must not stretch the band. */
   font-size: 36px;
+  align-items: center;
+  height: 54px;
 }
 .social-links__item {
   /* The original social buttons: cream glyph on a coral disc. */
@@ -275,12 +324,29 @@ img { max-width: 100%; height: auto; }
   height: 1em;
 }
 .site-footer__cols {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.2rem;
-  flex: 1 1 auto;
-  justify-content: flex-end;
+  display: grid;
+  gap: 0;
+  align-items: center;
+  justify-content: normal;
 }
+/* Desktop: three equal columns (social | mail | credit), as the original
+   columns block. The social list takes the first, the two text blocks the
+   remaining two. Below the tablet they stack, which is what the flex/grid
+   collapse above already produces. */
+@media (min-width: 48rem) {
+  .site-footer {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: center;
+  }
+  .site-footer > * { min-width: 0; }
+  .site-footer__cols {
+    grid-column: 2 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+  }
+}
+.site-footer a { color: inherit; }
 .site-footer__mail,
 .site-footer__credit { margin: 0; }
 
@@ -341,6 +407,9 @@ img { max-width: 100%; height: auto; }
 /* Content blocks. These replace the WordPress block classes that head-inline.css used to style; bead org-6i7.5 deletes those sheets, so the layout has to live here for the pages to keep their look. Geometry was measured from the WP build before rewriting (two columns 661/472 at 1280, images 512px and 284px, stacked full-width below 782px). */
 
 /* The WP content container carried has-global-padding, i.e. the same min(4rem,5vw) gutter the hero uses. Without it the columns run edge to edge and the measured 661/472 split no longer reproduces. */
+/* <main> starts 19.2px below the cover on the live site (cover ends 634.8,
+   main starts 654): the template part separation, not a heading margin. */
+main { margin-block-start: 1.2rem; }
 .home,
 .content {
   max-width: 100%;
@@ -370,15 +439,28 @@ img { max-width: 100%; height: auto; }
   line-height: 1.15;
   /* alignfull: the heading escaped the content gutter and spanned the page. */
   margin-inline: calc(var(--mp-gutter) * -1);
-  padding-block-end: 1.2rem; /* the spacer block it replaced */
+  /* Measured 60.2px tall at 1280 on the live site: font 52.3168 x lh 1.15.
+     There is NO bottom padding — the 19.2px that used to sit here made the
+     heading 79.3px and pushed everything below it down. */
+  padding-block-end: 0;
 }
 
+/* The live site wraps the title in a 98.5px group (h1 60.2 + its own block
+   spacing) and then starts .entry-content 19.2px later. Ours has no such
+   wrapper, so both gaps are reproduced as one top margin here (57.6 =
+   38.4 + 19.2); without it everything below sits 57.6px too high.
+   `.home div` (0,1,1) outranks a bare `.home__cols` (0,1,0), so this has to be
+   stated at the same weight as that reset. */
+.home .home__cols { margin-block-start: 57.6px; }
 .home__cols {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  /* No gap: the original column block had none. The two flex-bases sum to 120% and the shrink algorithm alone produces the measured 661/472 split, so adding a gap here pulls ~24px out of that and misaligns both columns. */
-  gap: 0;
+  /* 19.2px column gap, measured on the live site: the columns box is 1152 wide
+     and the two children are 660.8 + 472 + 19.2. An earlier comment here
+     claimed there was no gap; the live DOM disproves that. */
+  gap: 1.2rem;
+  align-items: stretch;
 }
 @media (min-width: 48rem) {
   .home__cols { flex-wrap: nowrap; }
@@ -394,10 +476,12 @@ img { max-width: 100%; height: auto; }
   .home__col { flex-basis: 100%; }
 }
 
-/* The original columns carried flex-basis:70% and 50% with flex-grow:0. Those sum to 120%, so the flex algorithm shrinks them proportionally — that is where the measured 661/472 split at 1280 comes from. Reproduced as-is rather than approximated with two tidy percentages. */
+/* The original columns carried flex-basis:70% and 50% with flex-grow:0. With
+   the 19.2px gap removed from the 1152px line first, the flex algorithm shrinks
+   those bases proportionally to the measured 660.8/472 split. */
 @media (min-width: 48rem) {
   .home__col--main { flex-basis: 70%; flex-grow: 0; }
-  .home__col--aside { flex-basis: 50%; flex-grow: 0; }
+  .home__col--aside { flex-basis: 50%; flex-grow: 0; padding-block: 1rem; }
 }
 
 .home__figure,
@@ -411,9 +495,17 @@ img { max-width: 100%; height: auto; }
 }
 .home__figure--main,
 .home__figure--aside { margin: 0; }
-/* The WP images were resized to fixed widths and kept them at every viewport (the aside stayed 284px even at 375), so these are plain max-widths, not viewport-conditional ones. */
-.home__figure--main img { width: 100%; max-width: min(512px, 100%); }
-.home__figure--aside img { width: 100%; max-width: min(284px, 100%); margin-left: auto; }
+/* The WP images were resized to fixed widths and kept them at every viewport (the aside stayed 284px even at 375), so these are plain max-widths, not viewport-conditional ones. The main photo is centred in its column (measured x=138.4 inside a column starting at 64, width 660.8, image 512), not flush left — so the CENTRING lives on the <figure>, which is the block-level box, not on the <img>, where width:100% would defeat margin:auto. */
+.home__figure--main {
+  max-width: min(512px, 100%);
+  margin-inline: auto;
+}
+.home__figure--main img { width: 100%; max-width: 100%; }
+.home__figure--aside {
+  max-width: min(284px, 100%);
+  margin-inline: auto 0;
+}
+.home__figure--aside img { width: 100%; max-width: 100%; }
 
 /* ---- "la petite histoire" / "the short story" -------------------------- */
 
@@ -601,9 +693,16 @@ img { max-width: 100%; height: auto; }
   font-size: clamp(1.85rem, 1.85rem + ((1vw - 0.2rem) * 1.083), 2.5rem);
   color: var(--mp-color-ink);
 }
-/* The two headings were shouldered outward, away from each other. */
-.rent__heading--left { align-self: flex-start; }
-.rent__heading--right { align-self: flex-end; }
+/* Both headings share ONE centre axis with their arrow.
+   Live WordPress measurement at 1280: heading x=243.4 w=278 (centre 382.4) and
+   arrow x=307.4 w=150 (centre 382.4) — identical. The previous
+   align-self:flex-start/flex-end pushed the heading to the column edge, so it
+   centred on 203 while the arrow centred on 352: 149px apart, which is the
+   misalignment that was reported.
+   Both are now centred by the column's own align-items:center, which is the
+   same axis the arrow already used. */
+.rent__heading--left,
+.rent__heading--right { align-self: center; }
 .rent__arrow {
   width: 150px;
   height: auto;
@@ -626,6 +725,16 @@ img { max-width: 100%; height: auto; }
 .rent__contact {
   margin-block-start: 2.4rem;
   text-align: center;
+}
+
+/* The contact intro is <br>-separated, so its width is intrinsic: the original
+   parent group was is-content-justification-center, which made the paragraph
+   shrink-wrap and centre (measured 1027px at x=126.5 inside a 1152px
+   container) rather than stretch to the full content width. */
+.contact__intro {
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
 }
 
 /* ---- contact form (on-parle-de-votre-projet) --------------------------- */
@@ -701,16 +810,27 @@ img { max-width: 100%; height: auto; }
 /* ---- FAQ --------------------------------------------------------------- */
 .faq {
   display: flex;
-  /* The original never stacked: at 375 the image was still only 43.6px wide beside a 274.7px text column, and the 1.2rem gap is what separates them. */
+  /* The original never stacked: the row overflowed instead of wrapping, so the
+     two columns stay side by side at every width. */
   flex-wrap: nowrap;
   align-items: flex-start;
   gap: 1.2rem;
   margin-block-start: 1.2rem;
 }
 .faq__image {
-  /* Measured: the image took 12.9% of the row at 375 and 13.7% at 1280, i.e. it scaled with the row rather than holding an intrinsic width. A percentage basis reproduces both; any auto/intrinsic sizing did not. */
-  flex: 0 0 13%;
-  width: 13%;
+  /* The image is a fixed 503x1024 at EVERY viewport on the live site (measured
+     at 375, 768 and 1280 — it never scales), because the original shipped a
+     plain <img> with no width constraint and the row simply overflowed. An
+     earlier version of this rule used a 13% flex basis, derived from a capture
+     in which image requests were aborted, so the real box was never measured;
+     at 1280 it produced 149.8px against the true 503px.
+     The image carries a 503px intrinsic width but must still SHRINK: the live
+     page keeps a 375px viewport at scrollWidth 375 by shrinking it, so the flex
+     basis is `auto` and the 503px acts as a floor only when there is room.
+     `flex: 0 0 auto` froze it and pushed scrollWidth to 635. */
+  flex: 0 1 auto;
+  width: 503px;
+  max-width: 100%;
   height: auto;
   /* The text column was capped rather than allowed to fill: measured 864px at 1280 (76% of the row) against 274px at 375 (81%), so the cap only binds on wide screens. 54rem = 864px. */
   margin-inline-end: auto;
