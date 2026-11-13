@@ -1,6 +1,15 @@
 baseURL = "/"
+# Emit page-relative asset URLs (./img/..., ../css/...). Every deployment
+# target (project Pages subpath, alx.github.io, a custom domain) then works
+# from the same build: no URL rewriting step at deploy time.
+relativeURLs = true
 defaultContentLanguage = "fr"
 title = "Minute papillons"
+
+# No content uses taxonomies. Left at Hugo's defaults it would still emit
+# empty /tags/ and /categories/ pages (serialised as index.xml) with no
+# matching layout, which shows up as a build warning and as dead URLs.
+taxonomies = { }
 
 # Multilingual: FR is the default language (served at the site root, e.g.
 # /louez-moi/), EN lives under the /en/ language subdirectory.
@@ -23,9 +32,10 @@ contentDir = "content/en"
 title = "Minute Papillons"
 
 [params]
-# Base URL canonique pour les tags OpenGraph (og:url, og:image).
-# Les deux deploiements Pages partagent la meme build: les tags OG
-# pointent toujours vers le site org, meme depuis alx.github.io.
+# Canonical ORIGIN + path for the OpenGraph tags (og:url, og:image).
+# Both Pages deployments share one build: the OG tags always point at the org
+# site, even when served from alx.github.io. Keep this as a full URL with a
+# trailing slash; templates append the page path themselves.
 ogBase = "https://minutepapillons.github.io/minutepapillons-org/"
 
 [markup.goldmark.renderer]

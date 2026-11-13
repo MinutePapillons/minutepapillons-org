@@ -1,8 +1,14 @@
-# Deploy the pre-built site (public/) to GitHub Pages.
-name: Deploy static site to GitHub Pages
+# Build the Hugo site and deploy it to GitHub Pages.
+#
+# Hugo builds with the deployment's baseURL. The site emits page-relative
+# asset URLs (hugo.toml: relativeURLs = true), so the SAME build works at a
+# project subpath (/minutepapillons-org/), at an apex domain, or on
+# alx.github.io — no URL-rewriting step at deploy time. That rewriting (the
+# old scripts/pages-prefix.sh) once baked "/--help/" into public/ and 404'd
+# every web font for several deploys (bead org-6i7.12).
+name: Build and deploy site
 
 on:
-  # Deploy to the github-pages environment on every push to main.
   push:
     branches: ["main"]
   # Allow manual deployments from the Actions tab.
@@ -15,25 +21,61 @@ permissions:
 
 concurrency:
   group: "pages"
+  cancel-in-progress: false
+
+env:
+  # Pinned: the build must be reproducible from content/ (bead org-6i7.1).
+  # Bump .hugo-version and this value together.
+  HUGO_VERSION: "0.169.0"
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Hugo (pinned)
+        run: |
+          set -euo pipefail
+          pinned="$(tr -d '[:space:]' < .hugo-version)"
+          if [ "$pinned" != "$HUGO_VERSION" ]; then
+            echo "::error::: .hugo-version ($pinned) and HUGO_VERSION ($HUGO_VERSION) disagree"
+            exit 1
+          fi
+          url="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
+          curl -fsSL "$url" -o /tmp/hugo.tgz
+          mkdir -p "$HOME/.local/bin"
+          tar -xzf /tmp/hugo.tgz -C "$HOME/.local/bin" hugo
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          hugo version
+
+      - name: Build
+        # baseURL drives Hugo's own absolute links (sitemap, hreflang, RSS).
+        # Project Pages serve from /<repo>/; change here for another target.
+        run: |
+          set -euo pipefail
+          hugo --minify \
+            --baseURL "https://minutepapillons.github.io/minutepapillons-org/" \
+            --destination public
+
+      - name: Verify generated assets resolve
+        # Replaces the runtime guard that used to live in pages-prefix.sh:
+        # fail the deploy instead of shipping 404 stylesheets/fonts/images.
+        run: bash scripts/check-assets.sh public
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "public"
+
   deploy:
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Rewrite asset URLs for project-Pages subpath
-        # Source + committed public/ use root-absolute URLs (works for
-        # `hugo serve` at "/"). For the project Pages subpath we prefix
-        # them at deploy time only. See scripts/pages-prefix.sh.
-        run: bash scripts/pages-prefix.sh /minutepapillons-org
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: "public"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

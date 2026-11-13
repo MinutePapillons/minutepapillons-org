@@ -1,1 +1,9 @@
 .hugo_build.lock
+node_modules
+.visual-baseline/
+
+# Build output: produced by `hugo` locally and by CI (.github/workflows/
+# deploy.yml). Never commit it — a stale public/ is what the deploy would
+# publish, which is how the "/--help/" prefix once shipped and 404'd every
+# web font (bead org-6i7.12).
+public/
