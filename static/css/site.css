@@ -790,3 +790,50 @@ img { max-width: 100%; height: auto; }
 .faq__a { margin: 1.2rem 0 0; }
 .faq__q + .faq__a { margin-block-start: 0; }
 
+
+/* ---- "acheter le kit" -------------------------------------------------- */
+/* The theme's --preset--font-size--x-large, no line-height override, and the
+   is-layout-flow 1.2rem top margin: measured 30.196px / 36.235px / 19.2px. */
+.kit__heading {
+  margin-block: 1.2rem 0;
+  font-size: clamp(1.85rem, 1.85rem + ((1vw - 0.2rem) * 1.083), 2.5rem);
+  text-align: center;
+}
+.kit-list {
+  margin-block: 1.2rem 0;
+  padding-inline-start: 1.5rem;
+}
+.kit-list li + li { margin-block-start: 0.6rem; }
+
+/* ---- agenda ------------------------------------------------------------ */
+.agenda {
+  display: flex;
+  flex-direction: column;
+  /* The WP group was a vertical flex with content-justification center, so
+     every child shrank to its content: the h2 measured 120px, not the full
+     337.5px row. */
+  align-items: center;
+  margin-block-start: 1.2rem;
+}
+/* Paragraphs and figures still filled the row in the original. */
+.agenda > p,
+.agenda > .agenda__figure { align-self: stretch; }
+/* h3 sits inside the flex column like the h2, so it shrinks to its text. */
+.agenda > h3 { align-self: center; }
+.agenda__heading {
+  margin-block: 1.2rem 0;
+  font-size: clamp(1.85rem, 1.85rem + ((1vw - 0.2rem) * 1.083), 2.5rem);
+  text-align: center;
+}
+.agenda__event {
+  margin-block: 1.6rem 0;
+  font-size: 1.2rem;
+}
+.agenda__figure {
+  margin-block: 1.2rem 0;
+  text-align: center;
+}
+.agenda__figure img {
+  max-width: 100%;
+  height: auto;
+}
