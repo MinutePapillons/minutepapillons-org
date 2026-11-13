@@ -532,3 +532,148 @@ img { max-width: 100%; height: auto; }
 
 .content__wide { margin-inline: calc(var(--mp-gutter) * -1); }
 .content__center { text-align: center; }
+
+/* ---- "trouver nos cabines" / "find our booths" ------------------------- */
+/* Lifted verbatim from the inline <style> block that used to ship inside the
+   content file, so the card geometry is the original authored CSS and not a
+   measurement approximation. Only the hooks changed: figure/cabine-body became
+   li/children when the card list turned into a real <ul>. */
+
+.cabine-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 28px;
+  max-width: 1200px;
+  margin: 1.2rem auto;
+  padding: 0 24px;
+  list-style: none;
+}
+.cabine-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+.cabine-card img {
+  display: block;
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+}
+/* .cabine-body kept as a wrapper (now .cabine-card__body) so the authored
+   padding/gap applies unchanged instead of being re-derived per element. */
+.cabine-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  padding: 16px 18px 20px;
+}
+.cabine-card h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+.cabine-card p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #333;
+}
+.cabine-card .cabine-card__soon {
+  font-style: italic;
+  color: #853349;
+}
+.cabine-card__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 260px;
+  background: #f6efee;
+  font-style: italic;
+  color: #853349;
+}
+
+@media (max-width: 37.49rem) {
+  .cabine-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .cabine-card img,
+  .cabine-card__empty { height: 180px; }
+}
+
+.map { width: 100%; max-width: 800px; height: 600px; border: 0; }
+
+/* ---- "louez-moi" ------------------------------------------------------- */
+/* Two side-by-side pitch columns, each: coloured heading, a 150px arrow, a
+   sub-heading and a paragraph whose line breaks are authored (<br>), so the
+   measure is fixed rather than left to the container. */
+
+.rent {
+  display: flex;
+  /* is-nowrap: the two pitches stayed side by side even at 375px. Letting
+     them wrap stacked each column to the full 337.5px and the authored <br>
+     lines then had nothing to wrap against (baseline paragraph was 210px). */
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: flex-start;
+  max-width: 100%;
+  /* No gap and no flex-grow in the original: each column sized to its own
+     content (210px paragraphs) and the centred pair simply overflowed. */
+  gap: 0;
+  margin-block-start: 1.2rem;
+}
+.rent__col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Equal-share flex columns. Measured baseline widths: 210 @375, 337 @768,
+     502 @1280 — i.e. they track the available width, so a fixed basis is
+     wrong and min-width:0 (not auto) is what lets them halve cleanly. */
+  flex: 1 1 0;
+  /* min-width:0 shrinks past the authored <br> measure. The original floored
+     at its own content width and overflowed horizontally instead — and that
+     floor differs per language (FR measured 210px, EN 200px), so it has to be
+     content-derived rather than one hard-coded number. */
+  min-width: min-content;
+  text-align: center;
+}
+.rent__heading {
+  margin: 0;
+  /* The theme's --preset--font-size--x-large, used verbatim. No line-height:
+     the original h2 inherited `normal`, which the harness measures at
+     36.2348px — forcing 1.15 shortened it to 34.725px. */
+  font-size: clamp(1.85rem, 1.85rem + ((1vw - 0.2rem) * 1.083), 2.5rem);
+  color: var(--mp-color-ink);
+}
+/* The two headings were shouldered outward, away from each other. */
+.rent__heading--left { align-self: flex-start; }
+.rent__heading--right { align-self: flex-end; }
+.rent__arrow {
+  width: 150px;
+  height: auto;
+  margin-block: 1.2rem 0;
+}
+.rent__subheading {
+  margin: 1.2rem 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+/* The paragraphs were the only block children of an is-layout-flow group, so
+   they carried the 1.2rem top margin; the first one is reset. They also
+   shrink-to-fit (baseline 210px at 375) because the column centres its items
+   and align-self makes the <p> stop stretching. */
+.rent__col p {
+  margin-block: 1.2rem 0;
+  text-align: left;
+  align-self: center;
+  /* align-self alone leaves width:auto at the container width; the original
+     box was shrink-to-fit at the widest authored line (210px at 375). */
+  width: fit-content;
+}
+.rent__col p:first-of-type { margin-block-start: 0; }
+.rent__contact {
+  margin-block-start: 2.4rem;
+  text-align: center;
+}
