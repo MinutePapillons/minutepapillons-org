@@ -4,7 +4,8 @@ Static Hugo build of https://www.minutepapillons.org — the 6 pages of the live
 in French (default language, at the site root) and English (under `/en/`):
 
 - `/` (accueil) → `/en/` (home)
-- `/220-2/` → `/en/220-2/`
+- `/la-petite-histoire/` → `/en/the-little-history/`
+  (the old `/220-2/` and `/en/220-2/` WordPress page-ID slugs redirect here)
 - `/louez-moi/` → `/en/louez-moi/`
 - `/trouver-nos-cabines/` → `/en/trouver-nos-cabines/`
 - `/on-parle-de-votre-projet/` → `/en/on-parle-de-votre-projet/`

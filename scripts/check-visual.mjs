@@ -37,10 +37,10 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 
 const PAGES = [
-  '/', '/220-2/', '/louez-moi/', '/trouver-nos-cabines/',
+  '/', '/la-petite-histoire/', '/louez-moi/', '/trouver-nos-cabines/',
   '/on-parle-de-votre-projet/', '/questions-frequentes/',
   '/acheter-le-kit/', '/agenda/',
-  '/en/', '/en/220-2/', '/en/louez-moi/', '/en/trouver-nos-cabines/',
+  '/en/', '/en/the-little-history/', '/en/louez-moi/', '/en/trouver-nos-cabines/',
   '/en/on-parle-de-votre-projet/', '/en/questions-frequentes/',
   '/en/acheter-le-kit/', '/en/agenda/',
 ];
