@@ -246,9 +246,13 @@ img { max-width: 100%; height: auto; }
   line-height: 1;
   text-decoration: none;
 }
+/* The active language keeps full opacity: the flag still has to read as a
+   flag, and the <html lang> / aria-current state already convey which one is
+   current to assistive tech. Dimming it made the page look like both
+   languages were disabled. */
 .nav__link--lang[aria-current="true"] {
   text-decoration: none;
-  opacity: 0.55;
+  opacity: 1;
 }
 
 /* ---------------------------------------------------------------- logo -- */
