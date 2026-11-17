@@ -245,11 +245,15 @@ img { max-width: 100%; height: auto; }
   font-size: 1.15em;
   line-height: 1;
   text-decoration: none;
+  /* The language you are NOT on is dimmed; the current one stays at full
+     opacity (below). Expressed this way round so the rule reads as "dim the
+     unselected", which is the intent, and so a page with no aria-current
+     (a language with no translation) still gets the dimmed treatment. */
+  opacity: 0.5;
 }
-/* The active language keeps full opacity: the flag still has to read as a
-   flag, and the <html lang> / aria-current state already convey which one is
-   current to assistive tech. Dimming it made the page look like both
-   languages were disabled. */
+/* The active language flag is shown at full strength, so the pair reads as
+   "this is where you are" rather than as two disabled icons. The aria-current
+   state and <html lang> already tell assistive tech the same thing. */
 .nav__link--lang[aria-current="true"] {
   text-decoration: none;
   opacity: 1;
